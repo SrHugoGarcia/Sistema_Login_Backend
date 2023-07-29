@@ -5,7 +5,6 @@ import org.hugo.backend.users.app.auth.filters.JwtValidationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,6 +30,8 @@ public class SpringSecurityConfig {
         return http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/v1/users/**").hasAnyRole("USER")
+                        .requestMatchers("/api/v1/auth/register").hasAnyRole("USER")
+                        .requestMatchers("/api/v1/auth/logout").hasAnyRole("USER")
                         .requestMatchers("/api/v1/users/logout").hasAnyRole("USER")
                         .requestMatchers("/api/v1/roles").hasAnyRole("USER")
                         .requestMatchers("/api/v1/roles/**").hasAnyRole("USER")
@@ -38,8 +39,8 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/users/profile").hasAnyRole("USER")
                         .requestMatchers("/api/v1/users/*/password").hasAnyRole("USER")
                         .requestMatchers("/api/v1/users/password").hasAnyRole("USER")
-                        .requestMatchers("/api/v1/users/forget-password").hasAnyRole("USER")
-                        .requestMatchers("/api/v1/users/*/forget-password").hasAnyRole("USER")
+                        .requestMatchers("/api/v1/auth/forget-password").hasAnyRole("USER")
+                        .requestMatchers("/api/v1/auth/*/forget-password").hasAnyRole("USER")
                         .anyRequest().authenticated())
                 .addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))
                 .addFilter(new JwtValidationFilter(authenticationConfiguration.getAuthenticationManager()))

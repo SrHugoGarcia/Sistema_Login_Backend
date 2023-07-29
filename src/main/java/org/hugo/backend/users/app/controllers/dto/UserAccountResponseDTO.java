@@ -1,7 +1,5 @@
 package org.hugo.backend.users.app.controllers.dto;
-import org.hugo.backend.users.app.models.entities.Role;
 import java.util.Date;
-import java.util.List;
 
 public class UserAccountResponseDTO {
     private String name;

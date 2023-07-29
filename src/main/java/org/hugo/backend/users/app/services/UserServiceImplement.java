@@ -33,6 +33,13 @@ public class UserServiceImplement implements UserService{
     private static final String USER_NOT_FOUND_MSG = " no existe en la base de datos";
     private static final String ID_ERROR_MSG = "Error: el ID: ";
 
+    /**
+     * Crea un nuevo usuario en la base de datos.
+     *
+     * @param userRequestDTO El objeto UserRequestDTO que contiene los datos del usuario a crear.
+     * @return Retorna el objeto UserResponseDTO que representa el usuario creado en la base de datos.
+     * @throws MappingException Si ocurre un error durante la conversión entre DTO y entidad.
+     */
     @Override
     @Transactional
     public UserResponseDTO createOne(UserRequestDTO userRequestDTO) throws MappingException {
@@ -41,6 +48,15 @@ public class UserServiceImplement implements UserService{
                 UserResponseDTO.class);
     }
 
+    /**
+     * Actualiza un usuario existente en la base de datos.
+     *
+     * @param userRequestDTO El objeto UserRequestDTO que contiene los nuevos datos del usuario a actualizar.
+     * @param id El ID del usuario que se va a actualizar.
+     * @return Retorna el objeto UserResponseDTO que representa el usuario actualizado en la base de datos.
+     * @throws MappingException Si ocurre un error durante la conversión entre DTO y entidad.
+     * @throws PasswordUpdateNotAllowedException Si el usuario intenta actualizar la contraseña.
+     */
     @Override
     @Transactional
     public UserResponseDTO updateOne(UserRequestDTO userRequestDTO,Long id) throws MappingException{
@@ -55,6 +71,15 @@ public class UserServiceImplement implements UserService{
         return DTOEntityMapper.convertEntityToDTO(userRepository.save(existingUser),UserResponseDTO.class);
     }
 
+    /**
+     * Actualiza la contraseña de un usuario existente en la base de datos.
+     *
+     * @param userRequestDTO El objeto UserRequestDTO que contiene la nueva contraseña del usuario.
+     * @param id El ID del usuario cuya contraseña se va a actualizar.
+     * @return Retorna el objeto UserResponseDTO que representa el usuario actualizado en la base de datos.
+     * @throws MappingException Si ocurre un error durante la conversión entre DTO y entidad.
+     * @throws UpdateProfileNotAllowedException Si el usuario intenta actualizar otros datos además de la contraseña.
+     */
 
     @Override
     @Transactional
@@ -70,6 +95,14 @@ public class UserServiceImplement implements UserService{
                 .convertEntityToDTO(userRepository.save(existingUser),UserResponseDTO.class);
     }
 
+    /**
+     * Busca un usuario por su ID en la base de datos.
+     *
+     * @param id El ID del usuario que se va a buscar.
+     * @return Retorna el objeto UserResponseDTO que representa el usuario encontrado en la base de datos.
+     * @throws MappingException Si ocurre un error durante la conversión entre entidad y DTO.
+     * @throws UserNotFoundException Si el usuario con el ID especificado no existe en la base de datos.
+     */
 
     @Override
     @Transactional(readOnly = true)
@@ -83,12 +116,24 @@ public class UserServiceImplement implements UserService{
         return DTOEntityMapper.convertEntityToDTO(user,UserResponseDTO.class);
     }
 
+    /**
+     * Obtiene una lista de todos los usuarios en la base de datos.
+     *
+     * @return Retorna una lista de objetos UserResponseDTO que representa todos los usuarios en la base de datos.
+     * @throws MappingException Si ocurre un error durante la conversión entre entidad y DTO.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<UserResponseDTO> findAll() throws MappingException{
         return DTOEntityMapper.convertIterableToDTOList(userRepository.findAll(),UserResponseDTO.class);
     }
 
+    /**
+     * Elimina un usuario existente de la base de datos.
+     *
+     * @param id El ID del usuario que se va a eliminar.
+     * @throws UserNotFoundException Si el usuario con el ID especificado no existe en la base de datos.
+     */
     @Override
     @Transactional
     public void deleteOne(Long id) {

@@ -53,7 +53,13 @@ public class UserAccountServiceImplement implements UserAccountService {
     private static final String MALFORMED_TOKEN_MSG = "Token malformado";
     private static final String SENDER_EMAIL = "org.hugo@gmail.com";
 
-
+    /**
+     * Registra un nuevo usuario en el sistema.
+     *
+     * @param userAccountRequestDTO Contiene la información necesaria para el registro del usuario.
+     * @throws RoleNotFoundException Sí ocurre un error al buscar el rol "user" en la base de datos.
+     * @return Retorna los datos del usuario registrado en un objeto UserAccountResponseDTO.
+     */
     @Override
     @Transactional
     public UserAccountResponseDTO registerUser(UserAccountRequestDTO userAccountRequestDTO) throws MappingException {
@@ -67,6 +73,13 @@ public class UserAccountServiceImplement implements UserAccountService {
         return DTOEntityMapper
                 .convertEntityToDTO(userRepository.save(user), UserAccountResponseDTO.class);
     }
+    /**
+     * Actualiza el perfil del usuario.
+     *
+     * @param request Se utiliza para obtener el token a través de las cookies o los headers.
+     * @throws PasswordUpdateNotAllowedException Si el usuario intenta actualizar la contraseña.
+     * @return Retorna los datos del usuario actualizado en un objeto UserAccountResponseDTO.
+     */
 
     @Override
     @Transactional
@@ -82,7 +95,13 @@ public class UserAccountServiceImplement implements UserAccountService {
         return DTOEntityMapper
                 .convertEntityToDTO(userRepository.save(user), UserAccountResponseDTO.class);
     }
-
+    /**
+     * Actualiza la contraseña del usuario.
+     *
+     * @param request Se utiliza para obtener el token a través de las cookies o los headers.
+     * @throws UpdateProfileNotAllowedException Si el usuario intenta actualizar otros datos además de la contraseña.
+     * @return Retorna los datos del usuario actualizado en un objeto UserAccountResponseDTO.
+     */
     @Override
     @Transactional
     public UserAccountResponseDTO updatePassword(HttpServletRequest request, UserAccountRequestDTO userAccountRequestDTO) throws MappingException {
@@ -98,7 +117,12 @@ public class UserAccountServiceImplement implements UserAccountService {
                 .convertEntityToDTO(userRepository.save(user), UserAccountResponseDTO.class);
     }
 
-
+    /**
+     * Obtiene el perfil del usuario.
+     *
+     * @param request Se utiliza para obtener el token a través de las cookies o los headers.
+     * @return Retorna los datos del usuario en un objeto UserAccountResponseDTO.
+     */
     @Override
     @Transactional(readOnly = true)
     public UserAccountResponseDTO getProfile(HttpServletRequest request) throws MappingException {
@@ -107,6 +131,19 @@ public class UserAccountServiceImplement implements UserAccountService {
                 .convertEntityToDTO(user, UserAccountResponseDTO.class);
     }
 
+    /**
+     * Se envia un correo electronico(incluye un token unico) para restablecer la contraseña
+     *
+     * @param userAccountRequestDTO obtiene el email a través del dto.
+     * @throws EmailNotFoundException Sí ocurre un error al obtener al usuario atraves de su correo(nulo o vacio)
+     * @throws ExpiredJwtException Sí ocurre un error si el token esta expirado no se maneja
+     * @throws SignatureException Sí ocurre un error si el token no es válido no se maneja
+     * @throws MalformedJwtException Sí ocurre un error si el token está malformado no se maneja
+     * @throws IllegalArgumentException Sí ocurre un error si el token solo cuenta con 2 digitos etc.
+     * No se manejan las cuatro excepciones esto es porque si al enviar el token,
+     * se pasa del tiempo de expiracion pueda a volver a generar un nuevo token.
+     * @throws MessagingException Sí ocurre un error al enviar el correo.
+     */
     @Override
     @Transactional
     public void forgotPassword(UserAccountRequestDTO userAccountRequestDTO) {
@@ -145,6 +182,15 @@ public class UserAccountServiceImplement implements UserAccountService {
         }
     }
 
+
+    /**
+     * Restaura la contraseña del usuario utilizando un token único.
+     *
+     * @param token El token único proporcionado para restaurar la contraseña.
+     * @param userAccountRequestDTO Contiene los datos necesarios para actualizar la contraseña (nuevo password).
+     * @throws EmailSendingException Si ocurre un error al enviar el correo electrónico de notificación.
+     * @throws MalformedJwtException Si el token proporcionado es inválido o está malformado.
+     */
     @Override
     public void restorePassword(String token, UserAccountRequestDTO userAccountRequestDTO) throws EmailSendingException {
         Claims claims = TokenJwtConfig.parseToken(token);
@@ -158,7 +204,12 @@ public class UserAccountServiceImplement implements UserAccountService {
             throw new MalformedJwtException(MALFORMED_TOKEN_MSG);
         }
     }
-
+    /**
+     * Cierra la sesión del usuario.
+     *
+     * @param request Se utiliza para obtener el token a través de las cookies o los headers.
+     * @param response Se usa para eliminar la cookie con nombre "jwt" y el encabezado "Authorization" de la respuesta.
+     */
     @Override
     public void logoutUser(HttpServletRequest request, HttpServletResponse response) {
         // Eliminar la cookie con nombre "jwt"
@@ -177,12 +228,25 @@ public class UserAccountServiceImplement implements UserAccountService {
         // Quitar el encabezado "Authorization" de la respuesta
         response.setHeader(TokenJwtConfig.HEADER_AUTHORIZATION, "");
     }
-
+    /**
+     * Genera un token para el usuario.
+     *
+     * @param user Se utiliza para obtener el email y generar el token.
+     * @return Retorna el token generado.
+     */
     private String generateNewToken(User user) {
         return TokenJwtConfig.generateToken(user.getEmail(), TOKEN_EXPIRATION_TIME_FORGET_PASSWORD);
     }
 
-
+    /**
+     * Obtiene el usuario a partir de la solicitud HTTP (token).
+     *
+     * @param request Se utiliza para obtener el token a través de las cookies o los headers.
+     * @throws TokenNotFoundException Si no se encuentra el token en la solicitud.
+     * @throws EmailByTokenNotFoundException Si no se encuentra el correo electrónico en el token.
+     * @throws UserNotFoundException Si el usuario no existe en la base de datos.
+     * @return Retorna el objeto User correspondiente al token de la solicitud.
+     */
     private User getUserFromRequest(HttpServletRequest request) {
         String token = TokenJwtConfig.getTokenFromRequest(request);
         if (token == null || token.isEmpty()) {
