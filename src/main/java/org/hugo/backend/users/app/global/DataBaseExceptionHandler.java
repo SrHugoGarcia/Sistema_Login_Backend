@@ -1,6 +1,7 @@
 package org.hugo.backend.users.app.global;
 
 import org.hugo.backend.users.app.utils.ResponseError;
+import org.hugo.backend.users.app.utils.StatusType;
 import org.springframework.dao.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,14 +9,16 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import static org.hugo.backend.users.app.global.ErrorMessages.*;
+
 @ControllerAdvice
 public class DataBaseExceptionHandler {
 
     @ExceptionHandler(DataAccessException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleDataAccessException(DataAccessException ex) {
-        return new ResponseEntity<>(new ResponseError("fail",
-                "Error en el acceso a datos",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                DATA_ACCESS_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -23,8 +26,8 @@ public class DataBaseExceptionHandler {
     @ExceptionHandler(DuplicateKeyException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleDuplicateKeyException(DuplicateKeyException ex) {
-        return new ResponseEntity<>(new ResponseError("fail",
-                "Registro duplicado",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                DUPLICATE_RECORD_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.BAD_REQUEST);
     }
@@ -32,8 +35,8 @@ public class DataBaseExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleDataIntegrityViolationException(DataIntegrityViolationException ex){
-        return new ResponseEntity<>(new ResponseError("fail",
-                "Violacion de restricciones de integridad de datos",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                DATA_INTEGRITY_VIOLATION_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.BAD_REQUEST);
     }
@@ -41,8 +44,8 @@ public class DataBaseExceptionHandler {
     @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleIncorrectResultSizeDataAccessException(IncorrectResultSizeDataAccessException ex){
-        return new ResponseEntity<>(new ResponseError("fail",
-                "El resultado no coinciden con lo esperado",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                UNEXPECTED_RESULT_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.BAD_REQUEST);
     }
@@ -50,8 +53,8 @@ public class DataBaseExceptionHandler {
     @ExceptionHandler(InvalidDataAccessApiUsageException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException ex){
-        return new ResponseEntity<>(new ResponseError("fail",
-                "Uso incorrecto de la API de acceso a datos de Spring",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                INCORRECT_DATA_ACCESS_API_USAGE_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.BAD_REQUEST);
     }
@@ -59,8 +62,8 @@ public class DataBaseExceptionHandler {
     @ExceptionHandler(InvalidDataAccessResourceUsageException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleInvalidDataAccessResourceUsageException(InvalidDataAccessResourceUsageException ex){
-        return new ResponseEntity<>(new ResponseError("fail",
-                "Uso incorrecto de los recursos de acceso a datos",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                INCORRECT_RESOURCE_USAGE_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.BAD_REQUEST);
     }
@@ -68,8 +71,8 @@ public class DataBaseExceptionHandler {
     @ExceptionHandler(CannotAcquireLockException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleCannotAcquireLockException(CannotAcquireLockException ex){
-        return new ResponseEntity<>(new ResponseError("fail",
-                "No se puede obtener un bloqueo en una tabla o fila de la base de datos",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                UNABLE_TO_OBTAIN_LOCK_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.BAD_REQUEST);
     }
@@ -77,8 +80,8 @@ public class DataBaseExceptionHandler {
     @ExceptionHandler(CannotSerializeTransactionException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleCannotSerializeTransactionException(CannotSerializeTransactionException ex){
-        return new ResponseEntity<>(new ResponseError("fail",
-                "La transacción no se puede serializar debido a un conflicto de concurrencia",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                TRANSACTION_SERIALIZATION_CONFLICT_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.BAD_REQUEST);
     }
@@ -86,8 +89,8 @@ public class DataBaseExceptionHandler {
     @ExceptionHandler(ConcurrencyFailureException.class)
     @ResponseBody
     public ResponseEntity<ResponseError> handleConcurrencyFailureException(ConcurrencyFailureException ex){
-        return new ResponseEntity<>(new ResponseError("fail",
-                "Conflicto de concurrencia durante una operación de actualización o eliminación",
+        return new ResponseEntity<>(new ResponseError(StatusType.FAIL,
+                CONCURRENT_UPDATE_DELETE_CONFLICT_ERROR_MSG,
                 ex.getMostSpecificCause().getMessage())
                 , HttpStatus.BAD_REQUEST);
     }

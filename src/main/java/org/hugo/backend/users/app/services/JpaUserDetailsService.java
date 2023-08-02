@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JpaUserDetailsService implements UserDetailsService {
@@ -30,8 +31,9 @@ public class JpaUserDetailsService implements UserDetailsService {
             throw new UserNotFoundException(String.format("El correo %s no existe en el sistema",email));
         }
         org.hugo.backend.users.app.models.entities.User user = userOptional.orElseThrow();
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(r-> new SimpleGrantedAuthority(r.getRole()))
+                .collect(Collectors.toList());
         return new User(user.getEmail(),
                 user.getPassword(),
                 true,

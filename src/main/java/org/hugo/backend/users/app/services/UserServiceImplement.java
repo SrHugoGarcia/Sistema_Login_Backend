@@ -2,21 +2,26 @@ package org.hugo.backend.users.app.services;
 
 import org.hugo.backend.users.app.controllers.dto.UserRequestDTO;
 import org.hugo.backend.users.app.controllers.dto.UserResponseDTO;
-import org.hugo.backend.users.app.exceptions.user.PasswordUpdateNotAllowedException;
-import org.hugo.backend.users.app.exceptions.user.UpdateProfileNotAllowedException;
-import org.hugo.backend.users.app.exceptions.user.UserNotFoundException;
+import org.hugo.backend.users.app.exceptions.user.*;
 import org.hugo.backend.users.app.repositories.RoleRepository;
 import org.hugo.backend.users.app.repositories.UserRepository;
 import org.hugo.backend.users.app.models.entities.User;
 import org.hugo.backend.users.app.utils.DTOEntityMapper;
+import org.hugo.backend.users.app.utils.SpecificationBuilder;
+import org.hugo.backend.users.app.utils.OrderType;
 import org.modelmapper.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -126,6 +131,68 @@ public class UserServiceImplement implements UserService{
     @Transactional(readOnly = true)
     public List<UserResponseDTO> findAll() throws MappingException{
         return DTOEntityMapper.convertIterableToDTOList(userRepository.findAll(),UserResponseDTO.class);
+    }
+
+    /**
+     * Recupera una lista paginada de usuarios ordenada según los parámetros proporcionados.
+     *
+     * @param pageNumber El número de página a recuperar (debe ser no negativo).
+     * @param resultsLimit El límite de resultados por página (debe ser mayor que 0).
+     * @param sortBy El campo por el que se ordenarán los resultados.
+     * @param orderType El tipo de orden (puede ser "ascendente" o "descendente").
+     * @param fields Lista de campos a incluir en los objetos UserResponseDTO.
+     *               Los campos no válidos serán ignorados en la respuesta.
+     * @param filters Lista de filtros en formato "campo:operador:valor".
+     *                Los filtros se aplicarán a los campos correspondientes usando los operadores especificados.
+     * @return Una lista de objetos UserResponseDTO.
+     * @throws NegativePageNumberException si el número de página es negativo.
+     * @throws NegativeLimitNumberException si el límite de resultados es no positivo.
+     * @throws OrderInvalidException si el tipo de orden no es válido.
+     */
+    @Override
+    public List<UserResponseDTO> findAll(int pageNumber, int resultsLimit,
+                                         String sortBy, String orderType, List<String> fields,List<String> filters)
+            throws MappingException {
+        List<User> users = null;
+        if (pageNumber < 0) {
+            throw new NegativePageNumberException("El número de página no puede ser negativo.");
+        }
+
+        if (resultsLimit <= 0) {
+            throw new NegativeLimitNumberException("El límite de resultados debe ser mayor que 0.");
+        }
+
+        Pageable pageable;
+        OrderType order = OrderType.fromValue(orderType.toLowerCase());
+        if (order == OrderType.ASCENDING) {
+            pageable = PageRequest.of(pageNumber, resultsLimit, Sort.by(sortBy).ascending());
+        } else if (order == OrderType.DESCENDING) {
+            pageable = PageRequest.of(pageNumber, resultsLimit, Sort.by(sortBy).descending());
+        } else {
+            throw new OrderInvalidException("El ordenamiento es inválido.");
+        }
+
+        SpecificationBuilder<User> userSpecificationBuilder = new SpecificationBuilder<>();
+        Specification<User> spec = userSpecificationBuilder.buildSpecification(filters);
+
+        if (spec != null) {
+            users = userRepository.findAll(spec, pageable).stream().toList();
+        } else {
+            users = userRepository.findAll(pageable).stream().toList();
+        }
+
+        List<UserResponseDTO> responseDTOs = DTOEntityMapper.convertIterableToDTOList(users, UserResponseDTO.class);
+        if (fields != null && !fields.isEmpty()) {
+            responseDTOs = responseDTOs.stream().map(dto -> {
+                dto.filterFieldsAndRemove(fields);
+                if(fields.isEmpty()){
+                    return dto;
+                }
+                return dto.filterFields(fields);
+            }).collect(Collectors.toList());
+        }
+
+        return responseDTOs;
     }
 
     /**

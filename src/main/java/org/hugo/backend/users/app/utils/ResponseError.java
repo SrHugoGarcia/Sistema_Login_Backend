@@ -3,7 +3,7 @@ package org.hugo.backend.users.app.utils;
 import java.util.List;
 
 public class ResponseError {
-    private String status;
+    private StatusType status;
     private String message;
     private String error;
     private List<String> errors;
@@ -11,23 +11,24 @@ public class ResponseError {
     public ResponseError() {
     }
 
-    public ResponseError(String status, String message, String error){
+    public ResponseError(StatusType status, String message, String error){
         this.status = status;
         this.message = message;
         this.error = error;
     }
 
-    public ResponseError(String status, String message, List<String> errors) {
+    public ResponseError(StatusType status, String message, List<String> errors) {
         this.status = status;
         this.message = message;
         this.errors = errors;
     }
 
-    public String getStatus() {
+
+    public StatusType getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusType status) {
         this.status = status;
     }
 

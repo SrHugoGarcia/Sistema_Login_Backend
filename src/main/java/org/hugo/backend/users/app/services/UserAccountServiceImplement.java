@@ -18,7 +18,7 @@ import org.hugo.backend.users.app.models.entities.User;
 import org.hugo.backend.users.app.repositories.RoleRepository;
 import org.hugo.backend.users.app.repositories.UserRepository;
 import org.hugo.backend.users.app.utils.DTOEntityMapper;
-import org.hugo.backend.users.app.utils.TypeTemplate;
+import org.hugo.backend.users.app.utils.TemplateType;
 import org.modelmapper.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -176,7 +176,7 @@ public class UserAccountServiceImplement implements UserAccountService {
                     TOKEN_EXPIRATION_EMAIL_SUBJECT
                             .concat(String.valueOf(TOKEN_EXPIRATION_TIME_FORGET_PASSWORD / 60000)
                                     .concat(TOKEN_EXPIRATION_EMAIL_BODY)),
-                    SENDER_EMAIL, TypeTemplate.FORGET_PASSWORD_TEMPLATE, user);
+                    SENDER_EMAIL, TemplateType.FORGET_PASSWORD_TEMPLATE, user);
         } catch (MessagingException e) {
             throw new EmailSendingException(ERROR_SENDING_EMAIL_MSG + e.getMessage());
         }

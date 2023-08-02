@@ -9,12 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "${api.base-path}/users")
@@ -91,10 +90,22 @@ public class UserController {
      * Incluye el id de los usuarios y los roles.
      * @return Respuesta con el usuario recién creado.
      */
+    //{{url}}/api/v1/users?fields=id,name,lastname,email,age,country&sort=name&filter[name]=hugo&filter[age][gte]=18&filter[country]=USA&page=1&limit=10
     @GetMapping
-    public ResponseEntity<ApiResponse> findAll(){
+    //@PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ApiResponse> findAll(@RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "10") int limit,
+                                               @RequestParam(defaultValue = "id") String sort,
+                                               @RequestParam(defaultValue = "asc") String order,
+                                               @RequestParam(required = false) List<String> fields,
+                                               @RequestParam(required = false) List<String> filters) {
+        log.info("Page:".concat(String.valueOf(page)));
+        log.info("Limit:".concat(String.valueOf(limit)));
+        log.info("Sort:".concat(sort));
+        log.info("Order:".concat(order));
+
         Map<String, List<UserResponseDTO>> listMap = new HashMap<>();
-        List<UserResponseDTO> users = userService.findAll();
+        List<UserResponseDTO> users = userService.findAll(page,limit,sort,order,fields,filters);
         listMap.put("users", users);
         ApiResponse apiResponse = new ApiResponse("successful","Usuarios obtenidos con exito",listMap);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);

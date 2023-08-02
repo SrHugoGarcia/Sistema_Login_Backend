@@ -1,9 +1,9 @@
 package org.hugo.backend.users.app.utils;
 
-public enum TypeTemplate {
+public enum TemplateType {
     FORGET_PASSWORD_TEMPLATE("email_forget_password");
     private String typeTemplate;
-    TypeTemplate(String template){
+    TemplateType(String template){
         this.typeTemplate = template;
     }
 

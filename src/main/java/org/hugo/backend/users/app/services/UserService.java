@@ -11,6 +11,7 @@ public interface UserService {
     UserResponseDTO updateOne(UserRequestDTO userRequestDTO, Long id) throws MappingException;
     UserResponseDTO findById(Long id) throws MappingException;
     List<UserResponseDTO> findAll() throws MappingException;
+    List<UserResponseDTO> findAll(int pageNumber, int resultsLimit, String sortBy, String orderType,List<String> fields,List<String> filters) throws MappingException;
     void deleteOne(Long id);
     UserResponseDTO updatePassword(UserRequestDTO userRequestDTO,Long id) throws MappingException;
 }
