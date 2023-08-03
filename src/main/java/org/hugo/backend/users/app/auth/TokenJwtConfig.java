@@ -21,7 +21,12 @@ public class TokenJwtConfig {
 
     public final static String NAME_COOKIE_JWT ="jwt";
 
+/*
+* scp -i ~/Downloads/backend_login.pem ./spring-boot-usersapp-0.0.1-SNAPSHOT.jar ec2-user@ec2-54-234-184-139.compute-1.amazonaws.com:~/.
+java -jar spring-boot-usersapp-0.0.1-SNAPSHOT.jar
+* screen -d -m java -jar spring-boot-usersapp-0.0.1-SNAPSHOT.jar
 
+ * */
 
     public static String getTokenFromRequest(HttpServletRequest request) {
         String header = request.getHeader(HEADER_AUTHORIZATION);

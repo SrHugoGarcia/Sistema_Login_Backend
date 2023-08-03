@@ -7,6 +7,7 @@ import org.hugo.backend.users.app.controllers.dto.ApiResponse;
 import org.hugo.backend.users.app.controllers.dto.UserAccountRequestDTO;
 import org.hugo.backend.users.app.controllers.dto.UserAccountResponseDTO;
 import org.hugo.backend.users.app.services.UserAccountService;
+import org.hugo.backend.users.app.utils.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "${api.base-path}/auth")
 @Validated
+@CrossOrigin(originPatterns = "*")
 public class AuthController {
 
     @Autowired
@@ -34,7 +36,7 @@ public class AuthController {
         UserAccountResponseDTO userAccountResponseDTO = userAccountService.registerUser(userAccountRequestDTO);
         Map<String,UserAccountResponseDTO> userAccountResponseDTOMap = new HashMap<>();
         userAccountResponseDTOMap.put("user",userAccountResponseDTO);
-        ApiResponse apiResponse = new ApiResponse("successful","Usuario registrado correctamente",userAccountResponseDTOMap);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Usuario registrado correctamente",userAccountResponseDTOMap);
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
@@ -61,7 +63,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse> restorePassword(@Validated(UserAccountRequestDTO.UpdatePasswordValidation.class)
                                              @RequestBody UserAccountRequestDTO userAccountRequestDTO,@PathVariable String token){
         userAccountService.restorePassword(token,userAccountRequestDTO);
-        ApiResponse apiResponse = new ApiResponse("successful", "Password actualizado con exito",null);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL, "Password actualizado con exito",null);
         return new ResponseEntity(apiResponse,HttpStatus.OK);
     }
 
@@ -75,7 +77,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse> forgetPassword(@Validated(UserAccountRequestDTO.ForgetPasswordValidation.class)
                                             @RequestBody UserAccountRequestDTO userAccountRequestDTO){
         userAccountService.forgotPassword(userAccountRequestDTO);
-        ApiResponse apiResponse = new ApiResponse("successful","Correo enviado con exito",null);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Correo enviado con exito",null);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 }

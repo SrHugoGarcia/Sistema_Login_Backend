@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.hugo.backend.users.app.controllers.dto.*;
 import org.hugo.backend.users.app.services.UserAccountService;
 import org.hugo.backend.users.app.services.UserService;
+import org.hugo.backend.users.app.utils.PaginatedResponse;
+import org.hugo.backend.users.app.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "${api.base-path}/users")
 @Validated
+@CrossOrigin(originPatterns = "*")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -37,7 +40,7 @@ public class UserController {
         Map<String,UserResponseDTO> userMap = new HashMap<>();
         UserResponseDTO userResponse = userService.createOne(userRequestDTO);
         userMap.put("user", userResponse);
-        ApiResponse apiResponse = new ApiResponse("successful","Usuario registrado con exito",userMap);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Usuario registrado con exito",userMap);
         return new ResponseEntity(apiResponse,HttpStatus.CREATED);
     }
 
@@ -54,7 +57,7 @@ public class UserController {
         Map<String,UserResponseDTO> userMap = new HashMap<>();
         UserResponseDTO userResponse = userService.updateOne(userRequestDTO,id);
         userMap.put("user", userResponse);
-        ApiResponse apiResponse = new ApiResponse("successful","Usuario actualizado con exito",userMap);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Usuario actualizado con exito",userMap);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
@@ -81,7 +84,7 @@ public class UserController {
         Map<String,UserResponseDTO> userMap = new HashMap<>();
         UserResponseDTO userResponseDTO = userService.findById(id);
         userMap.put("user", userResponseDTO);
-        ApiResponse apiResponse = new ApiResponse("successful","Usuario obtenido con exito",userMap);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Usuario obtenido con exito",userMap);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
@@ -103,11 +106,8 @@ public class UserController {
         log.info("Limit:".concat(String.valueOf(limit)));
         log.info("Sort:".concat(sort));
         log.info("Order:".concat(order));
-
-        Map<String, List<UserResponseDTO>> listMap = new HashMap<>();
-        List<UserResponseDTO> users = userService.findAll(page,limit,sort,order,fields,filters);
-        listMap.put("users", users);
-        ApiResponse apiResponse = new ApiResponse("successful","Usuarios obtenidos con exito",listMap);
+        PaginatedResponse<UserResponseDTO> users = userService.findAll(page,limit,sort,order,fields,filters);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Usuarios obtenidos con exito",users);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
@@ -127,7 +127,7 @@ public class UserController {
         Map<String,UserResponseDTO> userMap = new HashMap<>();
         UserResponseDTO userResponseDTO  = userService.updatePassword(userRequestDTO,id);
         userMap.put("user", userResponseDTO);
-        ApiResponse apiResponse = new ApiResponse("successful","Password actualizado con exito",userMap);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Password actualizado con exito",userMap);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
@@ -147,7 +147,7 @@ public class UserController {
         Map<String,UserAccountResponseDTO> userMap = new HashMap<>();
         UserAccountResponseDTO userAccountResponseDTO  = userAccountService.updateProfile(request,userAccountRequestDTO);
         userMap.put("user", userAccountResponseDTO);
-        ApiResponse apiResponse = new ApiResponse( "successful","Perfil actualizado con exito",userMap);
+        ApiResponse apiResponse = new ApiResponse( StatusType.SUCCESSFUL,"Perfil actualizado con exito",userMap);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
@@ -166,7 +166,7 @@ public class UserController {
         Map<String,UserAccountResponseDTO> userMap = new HashMap<>();
         UserAccountResponseDTO userAccountResponseDTO  = userAccountService.updatePassword(request,userAccountRequestDTO);
         userMap.put("user", userAccountResponseDTO);
-        ApiResponse apiResponse = new ApiResponse( "successful","Password actualizado con exito",userMap);
+        ApiResponse apiResponse = new ApiResponse( StatusType.SUCCESSFUL,"Password actualizado con exito",userMap);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
@@ -180,7 +180,7 @@ public class UserController {
         Map<String,UserAccountResponseDTO> userAccountResponseDTOMap = new HashMap<>();
         UserAccountResponseDTO userResponseDTO = userAccountService.getProfile(request);
         userAccountResponseDTOMap.put("user", userResponseDTO);
-        ApiResponse apiResponse = new ApiResponse("successful","Perfil obtenido con exito",userAccountResponseDTOMap);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Perfil obtenido con exito",userAccountResponseDTOMap);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 

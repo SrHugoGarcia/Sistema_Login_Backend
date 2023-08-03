@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.hugo.backend.users.app.controllers.dto.ApiResponse;
 import org.hugo.backend.users.app.models.entities.Role;
 import org.hugo.backend.users.app.services.RoleService;
+import org.hugo.backend.users.app.utils.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "${api.base-path}/roles")
+@CrossOrigin(originPatterns = "*")
 public class RoleController {
     @Autowired
     private RoleService roleService;
@@ -28,7 +30,7 @@ public class RoleController {
     @PostMapping
     public ResponseEntity<ApiResponse> save(@Valid @RequestBody Role role){
         Role roleSave = roleService.createOne(role);
-        ApiResponse apiResponse = new ApiResponse("successful", "Role creado con exito",
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL, "Role creado con exito",
                 roleSave);
         return new ResponseEntity<>(apiResponse,HttpStatus.CREATED);
     }
@@ -42,7 +44,7 @@ public class RoleController {
     @PutMapping(value ="/{id}")
     public ResponseEntity<ApiResponse> update(@Valid @RequestBody Role role,@PathVariable Long id){
         Role roleUpdate = roleService.updateOne(role,id);
-        ApiResponse apiResponse = new ApiResponse("successful","Role actualizado con exito",roleUpdate);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Role actualizado con exito",roleUpdate);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     /**
@@ -53,7 +55,7 @@ public class RoleController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<ApiResponse> findById(@PathVariable Long id){
         Role role = roleService.findById(id);
-        ApiResponse apiResponse = new ApiResponse("successful","Role obtenido con exito", role);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL,"Role obtenido con exito", role);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     /**
@@ -65,7 +67,7 @@ public class RoleController {
         List<Role> roles = roleService.findAll();
         Map<String,List<Role>> listMap = new HashMap<>();
         listMap.put("roles",roles);
-        ApiResponse apiResponse = new ApiResponse("successful", "Roles obtenidos con exito",listMap);
+        ApiResponse apiResponse = new ApiResponse(StatusType.SUCCESSFUL, "Roles obtenidos con exito",listMap);
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     /**

@@ -1,4 +1,7 @@
 package org.hugo.backend.users.app.controllers.dto;
+
+import org.hugo.backend.users.app.utils.StatusType;
+
 /**
  * Construye la respuesta de uso general.
  * Status informar al cliente del resultado de la peticion(successful o fail).
@@ -6,21 +9,22 @@ package org.hugo.backend.users.app.controllers.dto;
  * Sata se utiliza cuando es necesario enviar información.
  */
 public class ApiResponse {
-    private String status;
+    private StatusType status;
     private String message;
     private Object data;
 
-    public ApiResponse(String status, String message, Object data) {
+    public ApiResponse(StatusType status, String message, Object data) {
         this.status = status;
         this.message = message;
         this.data = data;
     }
 
-    public String getStatus() {
+
+    public StatusType getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusType status) {
         this.status = status;
     }
 

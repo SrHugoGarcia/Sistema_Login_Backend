@@ -14,7 +14,9 @@ public interface UserRepository extends CrudRepository<User,Long> {
     Optional<User>  getUserByEmail(String email);
 
     // Método para filtrar y paginar usuarios usando una especificación y Pageable.
-    List<User> findAll(Specification<User> spec, Pageable pageable);
-    List<User> findAll(Pageable pageable);
+    Page<User> findAll(Specification<User> spec, Pageable pageable);
+    Page<User> findAll(Pageable pageable);
+    //Page<User> findAll(Specification<User> spec, Pageable pageable);
+
 
 }

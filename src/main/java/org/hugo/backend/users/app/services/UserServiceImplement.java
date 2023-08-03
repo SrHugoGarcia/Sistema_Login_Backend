@@ -7,10 +7,12 @@ import org.hugo.backend.users.app.repositories.RoleRepository;
 import org.hugo.backend.users.app.repositories.UserRepository;
 import org.hugo.backend.users.app.models.entities.User;
 import org.hugo.backend.users.app.utils.DTOEntityMapper;
+import org.hugo.backend.users.app.utils.PaginatedResponse;
 import org.hugo.backend.users.app.utils.SpecificationBuilder;
 import org.hugo.backend.users.app.utils.OrderType;
 import org.modelmapper.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -37,6 +39,9 @@ public class UserServiceImplement implements UserService{
     private static final String PASSWORD_UPDATE_ONLY_MSG = "Solo se permite actualizar la contraseña";
     private static final String USER_NOT_FOUND_MSG = " no existe en la base de datos";
     private static final String ID_ERROR_MSG = "Error: el ID: ";
+    private static final String PAGE_NUMBER_NEGATIVE_ERROR = "El número de página no puede ser negativo.";
+    private static final String LIMIT_GREATER_THAN_ZERO_MSG = "El límite de resultados debe ser mayor que 0.";
+    private static final String INVALID_SORTING_ORDER_MSG = "El ordenamiento es inválido.";
 
     /**
      * Crea un nuevo usuario en la base de datos.
@@ -150,16 +155,16 @@ public class UserServiceImplement implements UserService{
      * @throws OrderInvalidException si el tipo de orden no es válido.
      */
     @Override
-    public List<UserResponseDTO> findAll(int pageNumber, int resultsLimit,
+    public PaginatedResponse<UserResponseDTO> findAll(int pageNumber, int resultsLimit,
                                          String sortBy, String orderType, List<String> fields,List<String> filters)
             throws MappingException {
         List<User> users = null;
         if (pageNumber < 0) {
-            throw new NegativePageNumberException("El número de página no puede ser negativo.");
+            throw new NegativePageNumberException(PAGE_NUMBER_NEGATIVE_ERROR);
         }
 
         if (resultsLimit <= 0) {
-            throw new NegativeLimitNumberException("El límite de resultados debe ser mayor que 0.");
+            throw new NegativeLimitNumberException(LIMIT_GREATER_THAN_ZERO_MSG);
         }
 
         Pageable pageable;
@@ -169,16 +174,26 @@ public class UserServiceImplement implements UserService{
         } else if (order == OrderType.DESCENDING) {
             pageable = PageRequest.of(pageNumber, resultsLimit, Sort.by(sortBy).descending());
         } else {
-            throw new OrderInvalidException("El ordenamiento es inválido.");
+            throw new OrderInvalidException(INVALID_SORTING_ORDER_MSG);
         }
 
         SpecificationBuilder<User> userSpecificationBuilder = new SpecificationBuilder<>();
         Specification<User> spec = userSpecificationBuilder.buildSpecification(filters);
+        // Crear un objeto PaginatedResponse y configurar sus propiedades
+        PaginatedResponse<UserResponseDTO> paginatedResponse = new PaginatedResponse<>();
 
         if (spec != null) {
-            users = userRepository.findAll(spec, pageable).stream().toList();
+            Page<User> userPage = userRepository.findAll(spec, pageable);
+            users = userPage.stream().toList();
+            paginatedResponse.setTotalPages(userPage.getTotalPages());
+            paginatedResponse.setTotalElements(userPage.getTotalElements());
+            paginatedResponse.setCurrentPage(pageNumber);
         } else {
-            users = userRepository.findAll(pageable).stream().toList();
+            Page<User> userPage = userRepository.findAll(pageable);
+            users = userPage.stream().toList();
+            paginatedResponse.setTotalPages(userPage.getTotalPages());
+            paginatedResponse.setTotalElements(userPage.getTotalElements());
+            paginatedResponse.setCurrentPage(pageNumber);
         }
 
         List<UserResponseDTO> responseDTOs = DTOEntityMapper.convertIterableToDTOList(users, UserResponseDTO.class);
@@ -192,7 +207,9 @@ public class UserServiceImplement implements UserService{
             }).collect(Collectors.toList());
         }
 
-        return responseDTOs;
+        paginatedResponse.setResults(responseDTOs);
+
+        return paginatedResponse;
     }
 
     /**

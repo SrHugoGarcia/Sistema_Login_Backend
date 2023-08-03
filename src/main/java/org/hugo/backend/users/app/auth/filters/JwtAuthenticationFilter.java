@@ -41,6 +41,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             if (user.getEmail() == null || user.getPassword() == null) {
                 //throw new UserCredentialsNotFoundException("Error en la autenticacion, email o password incorrecto");
             }
+            logger.info(user.getEmail());
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         } catch (IOException e) {
             throw new RuntimeException(e);
