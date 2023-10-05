@@ -36,7 +36,7 @@ public class UserAccountServiceImplement implements UserAccountService {
     @Autowired
     private UserService userService;
     @Autowired
-    EmailService emailService;
+    private EmailService emailService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     private static final long TOKEN_EXPIRATION_TIME_FORGET_PASSWORD = 20L * 60L * 1000L;
@@ -263,4 +263,5 @@ public class UserAccountServiceImplement implements UserAccountService {
         }
         return user;
     }
+
 }

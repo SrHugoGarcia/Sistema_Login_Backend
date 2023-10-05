@@ -41,7 +41,6 @@ java -jar spring-boot-usersapp-0.0.1-SNAPSHOT.jar
                 }
             }
         }
-
         return null;
     }
 

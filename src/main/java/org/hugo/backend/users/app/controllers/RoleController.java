@@ -18,8 +18,11 @@ import java.util.Map;
 @RequestMapping(value = "${api.base-path}/roles")
 @CrossOrigin(originPatterns = "*")
 public class RoleController {
-    @Autowired
     private RoleService roleService;
+    @Autowired
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     /**
      * Guarda un nuevo role en la base de datos.

@@ -59,7 +59,7 @@ public class GlobalExceptionHandler{
        // logger.info("Nombre del metodo HTTP: " + operation);
         responseError.setStatus(StatusType.FAIL);
         switch (controllerName){
-            case "UserRestController":
+            case "UserController":
                 switch (operation){
                     case "POST":
                         responseError.setMessage(USER_CREATION_ERROR_MSG);
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler{
                         responseError.setMessage(USER_UPDATE_ERROR_MSG);
                         break;
                 }
-            case "RoleRestController":
+            case "RoleController":
                 switch (operation){
                     case "POST":
                         responseError.setMessage(ROLE_CREATION_ERROR_MSG);
