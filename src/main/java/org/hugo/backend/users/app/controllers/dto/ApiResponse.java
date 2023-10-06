@@ -6,7 +6,7 @@ import org.hugo.backend.users.app.utils.StatusType;
  * Construye la respuesta de uso general.
  * Status informar al cliente del resultado de la peticion(successful o fail).
  * Message informa al cliente con un mensaje.
- * Sata se utiliza cuando es necesario enviar información.
+ * Data se utiliza cuando es necesario enviar información.
  */
 public class ApiResponse {
     private StatusType status;

@@ -1,4 +1,5 @@
 package org.hugo.backend.users.app.controllers;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -131,7 +132,7 @@ class RoleControllerTest {
 
     @Nested
     @DisplayName("Pruebas de actualización de rol")
-    class UpdateRoleTest{
+    class UpdateRoleTest {
         @Test
         @DisplayName("Verificación de Actualizacion de Rol: Detalles Válidos de Rol Resultan en una Actualizacion Exitosa")
         void testUpdateRole_withValidDetails_returnsSuccessfulRoleUpdate() throws Exception {
@@ -139,22 +140,22 @@ class RoleControllerTest {
             role.setId(1L);
             role.setRole("ROLE_ADMINISTRADOR");
             Long roleId = 1L;
-            when(roleService.updateOne(any(Role.class),anyLong())).thenReturn(role);
+            when(roleService.updateOne(any(Role.class), anyLong())).thenReturn(role);
 
-            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}",roleId)
+            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}", roleId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(role))).andReturn();
 
             ApiResponse apiResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ApiResponse.class);
 
-            assertAll(()->assertEquals(200,mvcResult.getResponse().getStatus(),
-                    "El estado de la respuesta debería indicar una actualizacion exitosa"),
+            assertAll(() -> assertEquals(200, mvcResult.getResponse().getStatus(),
+                            "El estado de la respuesta debería indicar una actualizacion exitosa"),
                     () -> assertEquals("Role actualizado con exito", apiResponse.getMessage(), "El mensaje de la respuesta debería ser 'Role actualizado con exito'"),
                     () -> {
                         Role roleUpdate = objectMapper.readValue(objectMapper.writeValueAsString(apiResponse.getData()), Role.class);
                         assertEquals(role.getRole(), roleUpdate.getRole(), "El rol actualizado debería coincidir con el rol proporcionado");
-                        assertTrue(roleUpdate.getId()!=null?true:false,"Deberia de regresar el id del rol actualizado");
+                        assertTrue(roleUpdate.getId() != null ? true : false, "Deberia de regresar el id del rol actualizado");
                     });
             System.out.println(mvcResult.getResponse().getContentAsString());
         }
@@ -171,7 +172,7 @@ class RoleControllerTest {
             when(roleService.updateOne(any(Role.class), anyLong())).thenReturn(role);
 
             // Cuando
-            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}",roleId)
+            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}", roleId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(role)))
@@ -202,7 +203,7 @@ class RoleControllerTest {
             when(roleService.updateOne(any(Role.class), anyLong())).thenThrow(new RoleNotFoundException("Error: el ID: 1  no existe en la base de datos"));
 
             // Cuando
-            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}",roleId)
+            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}", roleId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(role)))
@@ -220,7 +221,6 @@ class RoleControllerTest {
         }
 
 
-
         @Test
         @DisplayName("Verificación de Actualización de Rol: ID no valido(No es un numero)")
         void testUpdateRole_withInvalidNameInUrl_returnsBadRequest() throws Exception {
@@ -232,7 +232,7 @@ class RoleControllerTest {
             when(roleService.updateOne(any(Role.class), anyLong())).thenReturn(null);
 
             // Cuando
-            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}",roleIdInvalid)
+            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}", roleIdInvalid)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(role)))
@@ -247,14 +247,15 @@ class RoleControllerTest {
                     () -> assertEquals("Error al convertir el valor: invalidId a tipo Long", responseError.getError(), "El error de la respuesta debería ser 'Error al convertir el valor: invalidId a tipo Long'"),
                     () -> assertEquals("No se puede convertir el valor", responseError.getMessage(), "El mensaje de la respuesta debería ser 'No se puede convertir el valor'")
             );
-            System.out.println(mvcResult.getResponse().getContentAsString());        }
+            System.out.println(mvcResult.getResponse().getContentAsString());
+        }
 
     }
 
 
     @Nested
     @DisplayName("Pruebas de obtener rol por id")
-    class FindByIdRoleTest{
+    class FindByIdRoleTest {
         @Test
         @DisplayName("Verificación de Obtencion de  Rol: Detalles Válidos de Rol Resultan en una obtencion Exitosa")
         void testGetRoleById_withValidDetails_returnsSuccessfulRoleGet() throws Exception {
@@ -264,14 +265,14 @@ class RoleControllerTest {
             Long roleId = 1L;
             when(roleService.findById(anyLong())).thenReturn(role);
 
-            MvcResult mvcResult = mockMvc.perform(get("/api/v1/roles/{id}",roleId)
+            MvcResult mvcResult = mockMvc.perform(get("/api/v1/roles/{id}", roleId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(role))).andReturn();
 
             ApiResponse apiResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ApiResponse.class);
 
-            assertAll(()->assertEquals(200,mvcResult.getResponse().getStatus(),
+            assertAll(() -> assertEquals(200, mvcResult.getResponse().getStatus(),
                             "El estado de la respuesta debería indicar una obtencion exitosa"),
                     () -> assertEquals("Role obtenido con exito", apiResponse.getMessage(), "El mensaje de la respuesta debería ser 'Role obtenido con exito'"),
                     () -> {
@@ -281,6 +282,7 @@ class RoleControllerTest {
                     });
             System.out.println(mvcResult.getResponse().getContentAsString());
         }
+
         @Test
         @DisplayName("Verificación de Obtencion de Rol: ID no valido(No es un numero)")
         void testGetRoleById_withInvalidIDRole_returnBadRequest() throws Exception {
@@ -291,7 +293,7 @@ class RoleControllerTest {
 
             when(roleService.findById(anyLong())).thenReturn(role);
 
-            MvcResult mvcResult = mockMvc.perform(get("/api/v1/roles/{id}",roleIdInvalid)
+            MvcResult mvcResult = mockMvc.perform(get("/api/v1/roles/{id}", roleIdInvalid)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(role))).andReturn();
@@ -319,7 +321,7 @@ class RoleControllerTest {
             when(roleService.updateOne(any(Role.class), anyLong())).thenThrow(new RoleNotFoundException("Error: el ID: 100  no existe en la base de datos"));
 
             // Cuando
-            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}",roleId)
+            MvcResult mvcResult = mockMvc.perform(put("/api/v1/roles/{id}", roleId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(role)))
@@ -338,9 +340,10 @@ class RoleControllerTest {
 
 
     }
+
     @Nested
     @DisplayName("Pruebas de eliminar rol por id")
-    class DeleteRoleTest{
+    class DeleteRoleTest {
         @Test
         @DisplayName("Verificacion de Eliminacion de Rol: ID Valido de Rol Resulta en una Eliminacion Exitosa")
         void testDeleteRole_withIdValid_returnsNoContent() throws Exception {
@@ -350,12 +353,12 @@ class RoleControllerTest {
             // Simulación del servicio de eliminación de roles por ID
             doNothing().when(roleService).deleteOne(anyLong());
             //Cuando
-            MvcResult mvcResult = mockMvc.perform(delete("/api/v1/roles/{id}",roleId)
+            MvcResult mvcResult = mockMvc.perform(delete("/api/v1/roles/{id}", roleId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andReturn();
             //Entonces
-            assertEquals(204,mvcResult.getResponse().getStatus(),"El estado de la respuesta debería indicar una eliminación exitosa");
+            assertEquals(204, mvcResult.getResponse().getStatus(), "El estado de la respuesta debería indicar una eliminación exitosa");
         }
 
         @Test
@@ -366,20 +369,21 @@ class RoleControllerTest {
             doThrow(new RoleNotFoundException("Error: el ID: 2000 no existe en la base de datos")).when(roleService).deleteOne(anyLong());
 
             //Cuando
-            MvcResult mvcResult = mockMvc.perform(delete("/api/v1/roles/1",roleId)
+            MvcResult mvcResult = mockMvc.perform(delete("/api/v1/roles/1", roleId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andReturn();
 
-            ResponseError responseError = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),ResponseError.class);
+            ResponseError responseError = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ResponseError.class);
             assertAll(
-                    ()->assertEquals(404, mvcResult.getResponse().getStatus(),"El estado de la respuesta debería indicar una eliminacion fallida"),
-                    ()->assertEquals(StatusType.FAIL,responseError.getStatus(),"El estado de la respuesta deberia de ser fallida"),
-                    ()->assertEquals("Error al buscar el role",responseError.getMessage(),"El mensaje de la respuesta deberia ser 'Error al buscar el role'"),
-                    ()->assertEquals("Error: el ID: 2000 no existe en la base de datos",responseError.getError(),"El error de la respuesta deberia de ser 'Error: el ID: 2000 no existe en la base de datos'")
+                    () -> assertEquals(404, mvcResult.getResponse().getStatus(), "El estado de la respuesta debería indicar una eliminacion fallida"),
+                    () -> assertEquals(StatusType.FAIL, responseError.getStatus(), "El estado de la respuesta deberia de ser fallida"),
+                    () -> assertEquals("Error al buscar el role", responseError.getMessage(), "El mensaje de la respuesta deberia ser 'Error al buscar el role'"),
+                    () -> assertEquals("Error: el ID: 2000 no existe en la base de datos", responseError.getError(), "El error de la respuesta deberia de ser 'Error: el ID: 2000 no existe en la base de datos'")
             );
             System.out.println(mvcResult.getResponse().getContentAsString());
         }
+
         @Test
         @DisplayName("Verificacion de Eliminacion de Rol:ID No Valido(No es un numero)")
         void testDeleteRole_withInvalidIDRole_returnBadRequest() throws Exception {
@@ -388,24 +392,24 @@ class RoleControllerTest {
             doNothing().when(roleService).deleteOne(anyLong());
 
             //Cuando
-            MvcResult mvcResult = mockMvc.perform(delete("/api/v1/roles/{id}",roleIdInvalid)
+            MvcResult mvcResult = mockMvc.perform(delete("/api/v1/roles/{id}", roleIdInvalid)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)).andReturn();
 
-            ResponseError responseError = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),ResponseError.class);
+            ResponseError responseError = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ResponseError.class);
             assertAll(
-                    ()->assertEquals(400,mvcResult.getResponse().getStatus(),"El estado de la respuesta debería indicar una eliminacion fallida"),
-                    ()->assertEquals(StatusType.FAIL,responseError.getStatus(),"El estado de la respuesta deberia de ser fallida"),
+                    () -> assertEquals(400, mvcResult.getResponse().getStatus(), "El estado de la respuesta debería indicar una eliminacion fallida"),
+                    () -> assertEquals(StatusType.FAIL, responseError.getStatus(), "El estado de la respuesta deberia de ser fallida"),
                     () -> assertEquals("Error al convertir el valor: invalidId a tipo Long", responseError.getError(), "El error de la respuesta debería ser 'Error al convertir el valor: invalidId a tipo Long'"),
                     () -> assertEquals("No se puede convertir el valor", responseError.getMessage(), "El mensaje de la respuesta debería ser 'No se puede convertir el valor'")
-                    );
+            );
             System.out.println(mvcResult.getResponse().getContentAsString());
         }
     }
 
     @Nested
     @DisplayName("Pruebas de obtener roles")
-    class GetRolesTest{
+    class GetRolesTest {
         @Test
         @DisplayName("Verificación de Obtención de Roles: Existencia de Datos")
         void testGetRoles_returnsSuccessfulRolesGet() throws Exception {
@@ -430,31 +434,42 @@ class RoleControllerTest {
 
             // Entonces
             ApiResponse apiResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ApiResponse.class);
-
+            Map<String, List<Role>> rolesMap = (Map<String, List<Role>>) apiResponse.getData();
+            List<Role> rolesList = rolesMap.get("roles");
+            Map<String, Object> role1 = (Map<String, Object>) rolesList.get(0);
+            Map<String, Object> role2 = (Map<String, Object>) rolesList.get(1);
             assertAll(
                     () -> assertEquals(200, mvcResult.getResponse().getStatus(), "El estado de la respuesta debería indicar una obtención exitosa"),
                     () -> assertEquals(StatusType.SUCCESSFUL, apiResponse.getStatus(), "El estado de la respuesta debería ser exitoso"),
                     () -> assertEquals("Roles obtenidos con exito", apiResponse.getMessage(), "El mensaje de la respuesta debería ser 'Roles obtenidos con éxito'"),
-                    () -> assertNotNull(apiResponse.getData(), "La respuesta debería contener datos")
-                    /*() -> assertNotNull(apiResponse.getData().get("roles"), "La respuesta debería contener una lista de roles"),
-                    () -> assertEquals(2, ((List<?>) apiResponse.getData().get("roles")).size(), "La lista de roles debería contener dos elementos"),
-                    () -> {
-                        List<Map<String, Object>> rolesData = (List<Map<String, Object>>) apiResponse.getData().get("roles");
-                        assertEquals(1L, rolesData.get(0).get("id"), "El ID del primer rol debería ser 1");
-                        assertEquals("ROLE_USER", rolesData.get(0).get("role"), "El rol del primer rol debería ser ROLE_USER");
-                        assertEquals(2L, rolesData.get(1).get("id"), "El ID del segundo rol debería ser 2");
-                        assertEquals("ROLE_ADMIN", rolesData.get(1).get("role"), "El rol del segundo rol debería ser ROLE_ADMIN");
-                    }*/
+                    () -> assertNotNull(apiResponse.getData(), "La respuesta debería contener datos"),
+                    () -> assertEquals(roleUser.getId().intValue(), role1.get("id"), "El ID del primer rol debería ser 1"), 
+                    () -> assertEquals("ROLE_USER", role1.get("role"), "El rol del primer rol debería ser ROLE_USER"), 
+                    () -> assertEquals(roleAdmin.getId().intValue(), role2.get("id"), "El ID del segundo rol debería ser 2"), 
+                    () -> assertEquals("ROLE_ADMIN", role2.get("role"), "El rol del segundo rol debería ser ROLE_ADMIN")
             );
-            Map<String, List<Role>> rolesMap = (Map<String, List<Role>>) apiResponse.getData();
-            List<Role> rolesList =rolesMap.get("roles");
-            Map<String,Object> role1 = (Map<String, Object>) rolesList.get(0);
-            Map<String,Object> role2 = (Map<String, Object>) rolesList.get(1);
-            assertEquals(roleUser.getId(),role1.get("id"), "El ID del primer rol debería ser 1");
-            assertEquals("ROLE_USER", role1.get("role"), "El rol del primer rol debería ser ROLE_USER");
+        }
 
-            assertEquals(roleAdmin.getId(), role2.get("id"), "El ID del segundo rol debería ser 2");
-            assertEquals("ROLE_ADMIN", role2.get("role"), "El rol del segundo rol debería ser ROLE_ADMIN");
+        @Test
+        @DisplayName("Verificacion de Obtencion de roles: Vacio")
+        void testGetRolesEmpty_returnSuccessfulRolesGet() throws Exception {
+            List<Role> roleList = new ArrayList<>();
+            when(roleService.findAll()).thenReturn(roleList);
+
+            MvcResult mvcResult = mockMvc.perform(get("/api/v1/roles")
+                    .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andReturn();
+
+            ApiResponse apiResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),ApiResponse.class);
+            Map<String,Role> roleMap = (Map<String, Role>) apiResponse.getData();
+            List<Role> rolesList = (List<Role>) roleMap.get("roles");
+
+            System.out.printf(mvcResult.getResponse().getContentAsString());
+            assertAll(
+                    () -> assertEquals(200, mvcResult.getResponse().getStatus(), "El estado de la respuesta debería indicar una obtención exitosa"),
+                    () -> assertEquals(StatusType.SUCCESSFUL, apiResponse.getStatus(), "El estado de la respuesta debería ser exitoso"),
+                    () -> assertEquals("Roles obtenidos con exito",apiResponse.getMessage(),"El mensaje de la respuesta deberia de ser 'Roles obtenidos con exito'"),
+                    () -> assertEquals(roleList.size(),rolesList.size())
+            );
         }
 
     }
